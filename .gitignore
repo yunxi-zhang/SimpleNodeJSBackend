@@ -154,5 +154,6 @@ dist
 ### Node Patch ###
 # Serverless Webpack directories
 .webpack/
+package-lock.json
 
 # End of https://www.toptal.com/developers/gitignore/api/macos
