@@ -1,6 +1,11 @@
 var express = require('express');
+const fs = require('fs');
+const path = require('path');
 var router = express.Router();
 const jwt = require('jsonwebtoken');
+const symmetricKey = "secrect";
+var privateKey = fs.readFileSync(path.resolve(__dirname, '../keypair/jwtRS256.key'), 'utf-8');
+var publicKey = fs.readFileSync(path.resolve(__dirname, '../keypair/jwtRS256.key.pub'), 'utf-8');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -8,11 +13,17 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/login', (req, res) => {
+  console.log(path.resolve(__dirname, '../keypair/jwtRS256.key'));
+
   const payload = {
     name: "yunxi"
   }
 
-  const token = jwt.sign(payload, "secret", (err, token) => {
+  const signOptions = {
+    algorithm: "RS256"
+  }
+
+  const token = jwt.sign(payload, privateKey, signOptions, (err, token) => {
     res.json({
       token
     })
@@ -21,7 +32,7 @@ router.get('/login', (req, res) => {
 
 router.get('/profile',verifyToken ,(req, res) => {
 
-  jwt.verify(req.token, "secret", (err, authData) => {
+  jwt.verify(req.token, publicKey, (err, authData) => {
     if(err) {
       console.log("triggered 1");
       res.status(401).send("Unauthorized");
